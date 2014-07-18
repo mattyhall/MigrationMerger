@@ -3,6 +3,7 @@ import Types
 import Parser
 import Sql
 import qualified Data.Text.IO as TIO
+import Data.Monoid
 
 main :: IO ()
 main = do
@@ -14,7 +15,13 @@ main = do
                    , "ALTER TABLE atbl ADD tmp INT;"
                    , "ALTER TABLE atbl DROP tmp;"]
   let queries = map parseQuery queryTexts
+  putStrLn "=================================================================="
   putStrLn "Migrations:"
   mapM_ (TIO.putStrLn . sqlShow) queries
-  putStrLn "=================================================\nSingle query:"
+  putStrLn "=================================================================="
+  putStrLn "Single query"
   mapM_ (TIO.putStrLn . sqlShow) $ singleQueryFromMigrations queries
+  putStrLn "=================================================================="
+  putStrLn "Rollback example"
+  TIO.putStrLn ("Original: " <> sqlShow (queries !! 2))
+  TIO.putStrLn ("Rollback " <> sqlShow (rollback (queries !! 2)))
