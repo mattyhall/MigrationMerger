@@ -6,11 +6,11 @@ import Control.Lens
 import Control.Monad.State
 import qualified Data.Text as T
 
-singleQueryFromMigrations :: [Query] -> [Query]
-singleQueryFromMigrations queries = M.foldWithKey (\tblName cQuery acc -> Create tblName cQuery : acc) [] m
+singleStatementFromMigrations :: [Statement] -> [Statement]
+singleStatementFromMigrations queries = M.foldWithKey (\tblName cStatement acc -> Create tblName cStatement : acc) [] m
   where m = execState (mapM_ mergeMigration queries) M.empty
 
-mergeMigration :: Query -> State (M.Map T.Text CreateQuery) ()
+mergeMigration :: Statement -> State (M.Map T.Text CreateStatement) ()
 mergeMigration (Create name ctbl) = at name .= Just ctbl 
 
 mergeMigration (Alter name (RenameTable newName)) = do
@@ -30,7 +30,7 @@ mergeMigration (Alter name (DropColumn colName)) = at name . _Just . cols . at c
 
 mergeMigration (Alter name (ChangeColumnType colName t)) = at name . _Just . cols . at colName . _Just . typ .= t
 
-rollback :: Query -> Query
+rollback :: Statement -> Statement
 rollback (Alter name (RenameTable newName)) = Alter newName (RenameTable name)
 rollback (Alter name (RenameColumn oldCol newCol)) = Alter name (RenameColumn newCol oldCol)
 rollback (Alter name (AddColumn colName _)) = Alter name (DropColumn colName)

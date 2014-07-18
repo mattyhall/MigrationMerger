@@ -45,33 +45,33 @@ instance SqlShow Column where
 
 makeLenses ''Column
 
-data Query = Create T.Text CreateQuery
-           | Alter T.Text AlterQuery
-           deriving (Show, Eq)
+data Statement = Create T.Text CreateStatement
+               | Alter T.Text AlterStatement
+               deriving (Show, Eq)
 
-instance SqlShow Query where
+instance SqlShow Statement where
   sqlShow (Create name q) = "CREATE TABLE " <> name <> " (" <> sqlShow q <> ")" <> ";"
   sqlShow (Alter name q)  = "ALTER TABLE " <> name <> " " <> sqlShow q <> ";"
 
-data AlterQuery = RenameTable T.Text
-                | RenameColumn T.Text T.Text
-                | AddColumn T.Text Column
-                | DropColumn T.Text
-                | ChangeColumnType T.Text Type
-                deriving (Show, Eq)
+data AlterStatement = RenameTable T.Text
+                    | RenameColumn T.Text T.Text
+                    | AddColumn T.Text Column
+                    | DropColumn T.Text
+                    | ChangeColumnType T.Text Type
+                    deriving (Show, Eq)
 
-instance SqlShow AlterQuery where
+instance SqlShow AlterStatement where
   sqlShow (RenameTable name) = "RENAME TO " <> name
   sqlShow (RenameColumn old new) = "RENAME " <> old <> " TO " <> new
   sqlShow (AddColumn name col) = "ADD " <> name <> " " <> sqlShow col
   sqlShow (DropColumn name) = "DROP " <> name
   sqlShow (ChangeColumnType name typ) = name <> " TYPE " <> sqlShow typ 
 
-data CreateQuery = CreateTable { _cols :: M.Map T.Text Column
+data CreateStatement = CreateTable { _cols :: M.Map T.Text Column
                                } deriving (Show, Eq)
 
-instance SqlShow CreateQuery where
+instance SqlShow CreateStatement where
   sqlShow (CreateTable cols) = T.intercalate ", " colsText
     where colsText = M.foldWithKey (\k val acc -> acc ++ [k <> " " <> sqlShow val]) [] cols
 
-makeLenses ''CreateQuery
+makeLenses ''CreateStatement

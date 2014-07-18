@@ -42,7 +42,7 @@ parseColumn = do
   constraints <- parseConstraints <|> pure []
   return (name, Column t constraints)
 
-parseCreate :: Parser Query
+parseCreate :: Parser Statement
 parseCreate = do
   asciiCI "CREATE TABLE"
   skipSpace
@@ -56,14 +56,14 @@ parseCreate = do
   try $ char ';'
   return $ Create name (CreateTable (M.fromList cols))
 
-parseRenameTable :: Parser AlterQuery
+parseRenameTable :: Parser AlterStatement
 parseRenameTable = do
   asciiCI "RENAME TO"
   skipSpace
   name <-  parseName
   return $ RenameTable name
 
-parseRenameColumn :: Parser AlterQuery
+parseRenameColumn :: Parser AlterStatement
 parseRenameColumn = do
   asciiCI "RENAME"
   skipSpace
@@ -74,21 +74,21 @@ parseRenameColumn = do
   newName <- parseName
   return $ RenameColumn oldName newName
 
-parseAddColumn :: Parser AlterQuery
+parseAddColumn :: Parser AlterStatement
 parseAddColumn = do
   asciiCI "ADD"
   skipSpace
   (name, column) <- parseColumn
   return $ AddColumn name column
 
-parseDropColumn :: Parser AlterQuery
+parseDropColumn :: Parser AlterStatement
 parseDropColumn = do
   asciiCI "DROP"
   skipSpace
   name <- parseName
   return $ DropColumn name
 
-parseChangeColumnType :: Parser AlterQuery
+parseChangeColumnType :: Parser AlterStatement
 parseChangeColumnType = do
   name <- parseName
   skipSpace
@@ -97,7 +97,7 @@ parseChangeColumnType = do
   typ <- parseType
   return $ ChangeColumnType name typ
 
-parseAlter :: Parser Query
+parseAlter :: Parser Statement
 parseAlter =  do
   asciiCI "ALTER TABLE"
   skipSpace
@@ -108,6 +108,6 @@ parseAlter =  do
   char ';' <|> pure ' '
   return $ Alter name alter
 
-parseQuery :: T.Text -> Query
-parseQuery xs = q
+parseStatement :: T.Text -> Statement
+parseStatement xs = q
   where (Right q) = parseOnly (parseCreate <|> parseAlter) xs
