@@ -7,7 +7,7 @@ import Data.Monoid
 
 main :: IO ()
 main = do
-  let stmntTexts = [ "CREATE TABLE tbl (col1 INT NOT NULL, col2 CHAR(20));"
+  let stmntTexts = [ "CREATE TABLE tbl (col1 INT NOT NULL, col2 CHAR(20))"
                    , "ALTER TABLE tbl RENAME TO atbl"
                    , "ALTER TABLE atbl RENAME col1 TO first_col;"
                    , "ALTER TABLE atbl first_col CHAR(15)"

@@ -53,7 +53,7 @@ parseCreate = do
   skipSpace
   char ')'
   skipSpace
-  try $ char ';'
+  char ';' <|> pure ' '
   return $ Create name (CreateTable (M.fromList cols))
 
 parseRenameTable :: Parser AlterStatement
