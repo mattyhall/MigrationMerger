@@ -8,6 +8,8 @@ import Data.Monoid
 main :: IO ()
 main = do
   let stmntTexts = [ "CREATE TABLE tbl (col1 INT NOT NULL, col2 CHAR(20))"
+--                   CREATE TABLE error
+--                   , "CREATE TABLE tbl (col INT);"
                    , "ALTER TABLE tbl RENAME TO atbl"
                    , "ALTER TABLE atbl RENAME col1 TO first_col;"
                    , "ALTER TABLE atbl first_col CHAR(15)"
@@ -20,7 +22,7 @@ main = do
   mapM_ (TIO.putStrLn . sqlShow) stmnts
   putStrLn "=================================================================="
   putStrLn "Single statement"
-  mapM_ (TIO.putStrLn . sqlShow) $ singleStatementFromMigrations stmnts
+  print $ fmap (map sqlShow) $ singleStatementFromMigrations stmnts
   putStrLn "=================================================================="
   putStrLn "Rollback example"
   TIO.putStrLn ("Original: " <> sqlShow (stmnts !! 2))
