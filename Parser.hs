@@ -28,7 +28,7 @@ parseType = (asciiCI "INT" *> pure CInt) <|> (asciiCI "DATE" *> pure CDate) <|>
 
 parseConstraint :: Parser Constraint
 parseConstraint = (asciiCI "NOT" *> skipSpace *> asciiCI "NULL" *> pure NotNull) <|>
-                  (asciiCI "PRIMARY" *> skipSpace *> "KEY" *> pure PrimaryKey)
+                  (asciiCI "PRIMARY" *> skipSpace *> asciiCI "KEY" *> pure PrimaryKey)
 
 parseConstraints :: Parser [Constraint]
 parseConstraints = many1 (parseConstraint <* skipSpace)
@@ -91,8 +91,6 @@ parseDropColumn = do
 parseChangeColumnType :: Parser AlterStatement
 parseChangeColumnType = do
   name <- parseName
-  skipSpace
-  asciiCI "TYPE"
   skipSpace
   typ <- parseType
   return $ ChangeColumnType name typ

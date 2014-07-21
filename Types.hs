@@ -5,7 +5,6 @@ import Control.Lens
 import qualified Data.Text as T
 import qualified Data.Map as M
 import Data.Monoid
-import Data.List
 
 class SqlShow a where
   sqlShow :: a -> T.Text
@@ -65,10 +64,10 @@ instance SqlShow AlterStatement where
   sqlShow (RenameColumn old new) = "RENAME " <> old <> " TO " <> new
   sqlShow (AddColumn name col) = "ADD " <> name <> " " <> sqlShow col
   sqlShow (DropColumn name) = "DROP " <> name
-  sqlShow (ChangeColumnType name typ) = name <> " TYPE " <> sqlShow typ 
+  sqlShow (ChangeColumnType name typ) = name <> " " <> sqlShow typ 
 
 data CreateStatement = CreateTable { _cols :: M.Map T.Text Column
-                               } deriving (Show, Eq)
+                                   } deriving (Show, Eq)
 
 instance SqlShow CreateStatement where
   sqlShow (CreateTable cols) = T.intercalate ", " colsText
